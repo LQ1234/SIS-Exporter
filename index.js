@@ -17,8 +17,8 @@ function extractClasses() {
 
             if(times === null) return null;
 
-            startTime = times[0];
-            endTime = times[1];
+            let startTime = times[0];
+            let endTime = times[1];
 
             let datesMatch = dates.match(/(\d{2}\/\d{2}\/\d{4})/g);
             let startDate = datesMatch[0];
