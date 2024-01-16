@@ -1,5 +1,3 @@
-
-
 function extractClasses() {
     return Array.from(document.querySelectorAll("[id^=win0divDERIVED_REGFRM1_DESCR20]")).map((classEl) => {
         let classElSelector = "#" + classEl.id.replaceAll("$","\\$");
@@ -68,6 +66,7 @@ function generateICScomponent(class_name, component) {
     //         "endDate": "12/11/2023"
     //     }
     // }
+    
     let parseDate = (date) => {
         let dateArray = date.split("/").map((x) => parseInt(x));
         return [dateArray[2], dateArray[0], dateArray[1]];
@@ -99,6 +98,8 @@ function generateICScomponent(class_name, component) {
         title: event_name,
         start: [...startDateArray, ...startTimeArray],
         end: [...startDateArray, ...endTimeArray],
+        startOutputType: 'local',
+        endOutputType: 'local',
         description: `Instructor: ${component.instructor}`,
         location: component.room,
         recurrenceRule: rrule
@@ -116,6 +117,15 @@ function generateICS(classes) {
 }
 
 
+let TZ_STR = `
+BEGIN:VTIMEZONE
+TZID:America/New_York
+END:VTIMEZONE
+`
+function fixTimezone(output) {    
+    return output.replace("BEGIN:VEVENT", TZ_STR + "BEGIN:VEVENT");
+}
+
 import { createEvents} from 'ics';
 
 
@@ -131,7 +141,7 @@ if (window.location.href.startsWith("https://siscs.it.tufts.edu/psc/csprd/EMPLOY
                     reject(error)
                 }
         
-                resolve(new File([value], filename, { type: 'text/calendar' }))
+                resolve(new File([fixTimezone(value)], filename, { type: 'text/calendar' }))
             })
         })
         const url = URL.createObjectURL(file);
